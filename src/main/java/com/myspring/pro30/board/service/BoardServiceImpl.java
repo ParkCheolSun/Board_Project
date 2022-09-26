@@ -1,5 +1,6 @@
 package com.myspring.pro30.board.service;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -30,6 +31,16 @@ public class BoardServiceImpl implements BoardService{
 	@Override
 	public ArticleVO viewArticle(int articleNO) throws Exception{
 		return boardDAO.selectArticleNO(articleNO);
+	}	
+	
+	@Override
+	public Map listArticles(Map pagingMap) throws Exception{
+		Map articlesMap = new HashMap();
+		List<ArticleVO> articlesList = boardDAO.selectAllArtcles(pagingMap);
+		int totArticles = boardDAO.selectTotArticles();
+		articlesMap.put("articlesList", articlesList);
+		articlesMap.put("totArticles", totArticles);
+		return articlesMap;
 	}	
 
 }

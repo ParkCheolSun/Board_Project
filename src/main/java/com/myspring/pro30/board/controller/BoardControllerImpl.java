@@ -45,8 +45,22 @@ public class BoardControllerImpl implements BoardController{
 		String viewName = (String)request.getAttribute("viewName");
 		List articleList = boardService.listArticles();
 		ModelAndView mav = new ModelAndView(viewName);
-		mav.addObject("articleList", articleList);
-		logger.info("리스트 개수 : " + articleList.size());
+		//mav.addObject("articleList", articleList);
+		
+		String _section = request.getParameter("section");
+		String _pageNum = request.getParameter("pageNum");
+		
+		int section = Integer.parseInt(((_section == null) ? "1" : _section));
+		int pageNum = Integer.parseInt(((_pageNum == null) ? "1" : _pageNum));
+		Map<String, Integer> pagingMap = new HashMap<String, Integer>();
+		pagingMap.put("section", section);
+		pagingMap.put("pageNum", pageNum);
+		Map articlesMap = boardService.listArticles(pagingMap);
+		articlesMap.put("section", section);
+		articlesMap.put("pageNum", pageNum);
+		logger.debug(articlesMap.toString());
+		//request.setAttribute("articlesMap", articlesMap);
+		mav.addObject("articlesMap", articlesMap);
 		return mav;
 	}
 	

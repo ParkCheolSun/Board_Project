@@ -3,7 +3,8 @@
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <c:set var="contextPath" value="${pageContext.request.contextPath}" />
-<c:set var="toArticles" value="${articlesMap.toArticles }" />
+<c:set var="articleList" value="${articlesMap.articlesList }" />
+<c:set var="toArticles" value="${articlesMap.totArticles }" />
 <c:set var="section" value="${articlesMap.section }" />
 <c:set var="pageNum" value="${articlesMap.pageNum }" />
 <%

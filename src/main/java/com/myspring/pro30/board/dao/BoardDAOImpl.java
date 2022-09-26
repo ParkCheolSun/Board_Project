@@ -37,4 +37,16 @@ public class BoardDAOImpl implements BoardDAO{
 	public ArticleVO selectArticleNO(int articleNO) throws DataAccessException {
 		return sqlSession.selectOne("mapper.board.selectArticle",articleNO);
 	}
+	
+	@Override
+	public List selectAllArtcles(Map<String, Integer> pagingMap) throws Exception{
+		List<ArticleVO> articleList = sqlSession.selectList("mapper.board.pageNum",pagingMap);
+		return articleList;
+	}
+	
+	@Override
+	public int selectTotArticles() throws Exception{
+		int totpage = sqlSession.selectOne("mapper.board.selectTotArticles");
+		return totpage;
+	}
 }
