@@ -38,10 +38,20 @@ PUBLIC "-//mydatis.org//DTD Mapper 3.0//EN"
 			SELECT  nvl(max(articleNO), 0) + 1 from t_board		
 		]]>
 	</select>
+	
 	<select id="selectNewImageFileNO" resultType="int"  >
     <![CDATA[
       SELECT  nvl(max(imageFileNO),0) from t_imageFile		
     ]]>
   </select>
+  
+  <select id="selectArticle" resultType="articleVO"   parameterType="int">
+    <![CDATA[
+      SELECT * from t_board
+      where articleNO = #{articleNO}		
+    ]]>
+  </select>
+  
+  
 	
 </mapper>
