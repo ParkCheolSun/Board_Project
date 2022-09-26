@@ -13,4 +13,6 @@ public interface BoardDAO {
 	public ArticleVO selectArticleNO(int articleNO) throws DataAccessException;
 	public List selectAllArtcles(Map<String, Integer> pagingMap) throws Exception;
 	public int selectTotArticles() throws Exception;
+	public void modArticle(Map articleMap) throws Exception;
+	public void deleteArticle(int articleNO) throws DataAccessException;
 }

@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 
-//@Controller
+@Controller
 public class FileDownloadController {
 	private static String ARTICLE_IMAGE_REPO = "c:\\board\\article_image";
 	private static final Logger logger = LoggerFactory.getLogger(FileDownloadController.class);

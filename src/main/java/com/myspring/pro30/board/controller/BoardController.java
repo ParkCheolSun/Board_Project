@@ -12,4 +12,6 @@ public interface BoardController {
 	public ModelAndView listArticles(HttpServletRequest request, HttpServletResponse response) throws Exception;
 	public ResponseEntity addNewArticle(MultipartHttpServletRequest multipartRequest, HttpServletResponse response) throws Exception;
 	public ModelAndView viewArticle(@RequestParam("articleNO") int articleNO,HttpServletRequest request,HttpServletResponse response);
+	public ResponseEntity modArticle(MultipartHttpServletRequest multipartRequest, HttpServletResponse response) throws Exception;
+	public ResponseEntity removeArticle(@RequestParam("articleNO") int articleNO, HttpServletRequest request, HttpServletResponse response)throws Exception;
 }

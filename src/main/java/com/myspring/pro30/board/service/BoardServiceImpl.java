@@ -42,5 +42,16 @@ public class BoardServiceImpl implements BoardService{
 		articlesMap.put("totArticles", totArticles);
 		return articlesMap;
 	}	
+	
+	@Override
+	public void modArticle(Map articleMap) throws Exception{
+		boardDAO.modArticle(articleMap);
+	}	
+	
+	@Override
+	public void removeArticle(int articleNO) throws Exception {
+		boardDAO.deleteArticle(articleNO);
+	}
+
 
 }

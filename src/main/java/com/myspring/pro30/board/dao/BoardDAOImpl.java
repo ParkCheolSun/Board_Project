@@ -49,4 +49,16 @@ public class BoardDAOImpl implements BoardDAO{
 		int totpage = sqlSession.selectOne("mapper.board.selectTotArticles");
 		return totpage;
 	}
+	
+	@Override
+	public void modArticle(Map articleMap) throws Exception{
+		sqlSession.update("mapper.board.updateArticle",articleMap);
+	}
+	
+	@Override
+	public void deleteArticle(int articleNO) throws DataAccessException {
+		sqlSession.delete("mapper.board.deleteArticle", articleNO);
+		
+	}
+
 }
