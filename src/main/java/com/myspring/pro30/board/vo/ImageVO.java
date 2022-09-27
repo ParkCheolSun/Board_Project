@@ -1,4 +1,4 @@
-package com.myspring.pro30.board.service;
+package com.myspring.pro30.board.vo;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;

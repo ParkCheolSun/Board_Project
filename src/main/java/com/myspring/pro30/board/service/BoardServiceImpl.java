@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.myspring.pro30.board.dao.BoardDAO;
 import com.myspring.pro30.board.vo.ArticleVO;
+import com.myspring.pro30.board.vo.ImageVO;
 
 @Service("boardService")
 @Transactional(propagation = Propagation.REQUIRED)
@@ -31,10 +32,21 @@ public class BoardServiceImpl implements BoardService{
 		return articleNO;
 	}	
 	
+	/*
 	@Override
 	public ArticleVO viewArticle(int articleNO) throws Exception{
 		return boardDAO.selectArticleNO(articleNO);
-	}	
+	}	*/
+	
+	@Override
+	public Map viewArticle(int articleNO) throws Exception{
+		Map articleMap = new HashMap();
+		ArticleVO articleVO = boardDAO.selectArticleNO(articleNO);
+		List<ImageVO> imageFileList = boardDAO.selectImageFileList(articleNO);
+		articleMap.put("article", articleVO);
+		articleMap.put("imageFileList", imageFileList);
+		return articleMap;
+	}
 	
 	@Override
 	public Map listArticles(Map pagingMap) throws Exception{

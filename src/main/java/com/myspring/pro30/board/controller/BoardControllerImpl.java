@@ -29,8 +29,8 @@ import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.myspring.pro30.board.service.BoardService;
-import com.myspring.pro30.board.service.ImageVO;
 import com.myspring.pro30.board.vo.ArticleVO;
+import com.myspring.pro30.board.vo.ImageVO;
 import com.myspring.pro30.member.vo.MemberVO;
 
 @Controller("boardController")
@@ -156,14 +156,15 @@ public class BoardControllerImpl implements BoardController {
 	public ModelAndView viewArticle(@RequestParam("articleNO") int articleNO, HttpServletRequest request,
 			HttpServletResponse response) {
 		String viewName = (String) request.getAttribute("viewName");
+		ModelAndView mav = new ModelAndView();
 		try {
-			articleVO = boardService.viewArticle(articleNO);
+			//articleVO = boardService.viewArticle(articleNO);
+			Map articleMap = boardService.viewArticle(articleNO);
+			mav.setViewName(viewName);
+			mav.addObject("articleMap", articleMap);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		ModelAndView mav = new ModelAndView();
-		mav.setViewName(viewName);
-		mav.addObject("article", articleVO);
 		return mav;
 	}
 

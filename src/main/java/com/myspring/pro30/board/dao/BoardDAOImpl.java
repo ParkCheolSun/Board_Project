@@ -9,8 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Repository;
 
-import com.myspring.pro30.board.service.ImageVO;
 import com.myspring.pro30.board.vo.ArticleVO;
+import com.myspring.pro30.board.vo.ImageVO;
 
 @Repository("boardDAO")
 public class BoardDAOImpl implements BoardDAO {
@@ -54,6 +54,11 @@ public class BoardDAOImpl implements BoardDAO {
 	@Override
 	public ArticleVO selectArticleNO(int articleNO) throws DataAccessException {
 		return sqlSession.selectOne("mapper.board.selectArticle", articleNO);
+	}
+	
+	@Override
+	public List<ImageVO> selectImageFileList(int articleNO) throws DataAccessException{
+		return sqlSession.selectList("mapper.board.selectImageFileList", articleNO);
 	}
 
 	@Override

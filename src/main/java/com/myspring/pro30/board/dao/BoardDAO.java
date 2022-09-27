@@ -6,6 +6,7 @@ import java.util.Map;
 import org.springframework.dao.DataAccessException;
 
 import com.myspring.pro30.board.vo.ArticleVO;
+import com.myspring.pro30.board.vo.ImageVO;
 
 public interface BoardDAO {
 	public List selectAllArtclesList() throws Exception;
@@ -16,4 +17,5 @@ public interface BoardDAO {
 	public void modArticle(Map articleMap) throws Exception;
 	public void deleteArticle(int articleNO) throws DataAccessException;
 	public void insertNewImage(Map articleMap) throws DataAccessException;
+	public List<ImageVO> selectImageFileList(int articleNO) throws DataAccessException;
 }
