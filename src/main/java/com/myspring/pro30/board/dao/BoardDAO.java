@@ -15,4 +15,5 @@ public interface BoardDAO {
 	public int selectTotArticles() throws Exception;
 	public void modArticle(Map articleMap) throws Exception;
 	public void deleteArticle(int articleNO) throws DataAccessException;
+	public void insertNewImage(Map articleMap) throws DataAccessException;
 }

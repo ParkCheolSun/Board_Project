@@ -22,7 +22,11 @@
 		reader.readAsDataURL(input.files[0]);
 		}
 	}
-	
+	var cnt=1;
+	function fn_addFile() {
+		$("#d_file").append("<br>"+"<input type='file' name='file"+cnt+"'/>");
+		cnt++;
+	}
 	function backToList(obj) {
 		obj.action = "${contextPath}/board/listArticles.do";
 		obj.submit();
@@ -54,10 +58,12 @@
 			<tr>
 				<td align="right">이미지 파일 첨부 : </td>
 				<td colspan="2">
-					<input type="file" name="imageFileName" onchange="readURL(this);"/>
+					<!-- <input type="file" name="imageFileName" onchange="readURL(this);"/> -->
+					<input type="button" value="파일추가" onclick="fn_addFile()"/>
 				</td>
 				<td>
-					<img src="#" id="preview" width="200" height="200"/>
+					<!-- <img src="#" id="preview" width="200" height="200"/> -->
+					<div id="d_file"></div>
 				</td>
 			</tr>
 			<tr>

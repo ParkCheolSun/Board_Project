@@ -1,5 +1,6 @@
 package com.myspring.pro30.board.dao;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -8,57 +9,74 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Repository;
 
+import com.myspring.pro30.board.service.ImageVO;
 import com.myspring.pro30.board.vo.ArticleVO;
 
 @Repository("boardDAO")
-public class BoardDAOImpl implements BoardDAO{
+public class BoardDAOImpl implements BoardDAO {
 	@Autowired
 	private SqlSession sqlSession;
-	
+
 	@Override
-	public List selectAllArtclesList() throws Exception{
+	public List selectAllArtclesList() throws Exception {
 		List<ArticleVO> articleList = sqlSession.selectList("mapper.board.selectAllArticleList");
 		return articleList;
 	}
-	
+
 	@Override
 	public int insertNewArticle(Map articleMap) throws DataAccessException {
 		int articleNO = selectNewArticleNO();
 		articleMap.put("articleNO", articleNO);
-		sqlSession.insert("mapper.board.insertNewArticle",articleMap);
+		sqlSession.insert("mapper.board.insertNewArticle", articleMap);
 		return articleNO;
 	}
-	
+
+	@Override
+	public void insertNewImage(Map articleMap) throws DataAccessException {
+		List<ImageVO> imageFileList = (ArrayList) articleMap.get("imageFileList");
+		int articleNO = (Integer)articleMap.get("articleNO");
+		int imageFileNO = selectNewImageFileNO();
+		for (ImageVO imageVO : imageFileList) {
+			imageVO.setImageFileNO(++imageFileNO);
+			imageVO.setArticleNO(articleNO);
+		}
+		sqlSession.insert("mapper.board.insertNewImage",imageFileList);
+	}
+
+	private int selectNewImageFileNO() throws DataAccessException {
+		return sqlSession.selectOne("mapper.board.selectNewImageFileNO");
+	}
+
 	private int selectNewArticleNO() throws DataAccessException {
 		return sqlSession.selectOne("mapper.board.selectNewArticleNO");
 	}
-	
+
 	@Override
 	public ArticleVO selectArticleNO(int articleNO) throws DataAccessException {
-		return sqlSession.selectOne("mapper.board.selectArticle",articleNO);
+		return sqlSession.selectOne("mapper.board.selectArticle", articleNO);
 	}
-	
+
 	@Override
-	public List selectAllArtcles(Map<String, Integer> pagingMap) throws Exception{
-		List<ArticleVO> articleList = sqlSession.selectList("mapper.board.pageNum",pagingMap);
+	public List selectAllArtcles(Map<String, Integer> pagingMap) throws Exception {
+		List<ArticleVO> articleList = sqlSession.selectList("mapper.board.pageNum", pagingMap);
 		return articleList;
 	}
-	
+
 	@Override
-	public int selectTotArticles() throws Exception{
+	public int selectTotArticles() throws Exception {
 		int totpage = sqlSession.selectOne("mapper.board.selectTotArticles");
 		return totpage;
 	}
-	
+
 	@Override
-	public void modArticle(Map articleMap) throws Exception{
-		sqlSession.update("mapper.board.updateArticle",articleMap);
+	public void modArticle(Map articleMap) throws Exception {
+		sqlSession.update("mapper.board.updateArticle", articleMap);
 	}
-	
+
 	@Override
 	public void deleteArticle(int articleNO) throws DataAccessException {
 		sqlSession.delete("mapper.board.deleteArticle", articleNO);
-		
+
 	}
 
 }

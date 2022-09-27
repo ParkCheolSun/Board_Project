@@ -1,6 +1,7 @@
 package com.myspring.pro30.board.controller;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -28,6 +29,7 @@ import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.myspring.pro30.board.service.BoardService;
+import com.myspring.pro30.board.service.ImageVO;
 import com.myspring.pro30.board.vo.ArticleVO;
 import com.myspring.pro30.member.vo.MemberVO;
 
@@ -38,6 +40,7 @@ public class BoardControllerImpl implements BoardController {
 	private BoardService boardService;
 	@Autowired
 	private ArticleVO articleVO;
+	private ImageVO imageVO;
 	private static final Logger logger = LoggerFactory.getLogger(BoardControllerImpl.class);
 
 	@RequestMapping(value = "/board/listArticles.do", method = { RequestMethod.POST, RequestMethod.GET })
@@ -79,14 +82,26 @@ public class BoardControllerImpl implements BoardController {
 			articleMap.put(name, value);
 		}
 
-		String imageFileName = upload(multipartRequest);
+		//String imageFileName = upload(multipartRequest);
+		List<String> fileList = upload(multipartRequest);
+		List<ImageVO> imageFileList = new ArrayList<ImageVO>();
 		HttpSession session = multipartRequest.getSession();
 		MemberVO memberVO = (MemberVO) session.getAttribute("member");
+		
 		String id = memberVO.getId();
 		articleMap.put("parentNO", 0);
 		articleMap.put("id", id);
-		articleMap.put("imageFileName", imageFileName);
+		//articleMap.put("imageFileName", imageFileName);
 		logger.info(articleMap.toString());
+		
+		if(fileList != null && fileList.size() != 0) {
+			for(String fileName : fileList) {
+				imageVO = new ImageVO();
+				imageVO.setImageFileName(fileName);
+				imageFileList.add(imageVO);
+			}
+			articleMap.put("imageFileList", imageFileList);
+		}
 
 		String message;
 		ResponseEntity resEnt = null;
@@ -94,10 +109,15 @@ public class BoardControllerImpl implements BoardController {
 		responseHeaders.add("Content-Type", "text/html; charset=utf-8");
 		try {
 			int articleNO = boardService.addNewArticle(articleMap);
-			if (imageFileName != null && imageFileName.length() != 0) {
-				File srcFile = new File(ARTICLE_IMAGE_REPO + "\\" + "temp" + "\\" + imageFileName);
-				File destDir = new File(ARTICLE_IMAGE_REPO + "\\" + articleNO);
-				FileUtils.moveFileToDirectory(srcFile, destDir, true);
+			if (imageFileList != null && imageFileList.size() != 0) {
+				for(ImageVO  imageVO:imageFileList) {
+					String imageFileName = imageVO.getImageFileName();
+					File srcFile = new File(ARTICLE_IMAGE_REPO+"\\"+"temp"+"\\"+imageFileName);
+					File destDir = new File(ARTICLE_IMAGE_REPO+"\\"+articleNO);
+					//destDir.mkdirs();
+					FileUtils.moveFileToDirectory(srcFile, destDir,true);
+				}
+
 			}
 
 			message = "<script>";
@@ -106,8 +126,13 @@ public class BoardControllerImpl implements BoardController {
 			message += " </script>";
 			resEnt = new ResponseEntity(message, responseHeaders, HttpStatus.CREATED);
 		} catch (Exception e) {
-			File srcFile = new File(ARTICLE_IMAGE_REPO + "\\" + "temp" + "\\" + imageFileName);
-			srcFile.delete();
+			if(imageFileList!=null && imageFileList.size()!=0) {
+				  for(ImageVO  imageVO:imageFileList) {
+				  	String imageFileName = imageVO.getImageFileName();
+					File srcFile = new File(ARTICLE_IMAGE_REPO+"\\"+"temp"+"\\"+imageFileName);
+				 	srcFile.delete();
+				  }
+			}
 
 			message = " <script>";
 			message += " alert('오류가 발생했습니다. 다시 시도해 주세요');');";
@@ -155,7 +180,7 @@ public class BoardControllerImpl implements BoardController {
 			articleMap.put(name, value);
 		}
 
-		String imageFileName = upload(multipartRequest);
+		String imageFileName = "temp";//upload(multipartRequest, true);
 		HttpSession session = multipartRequest.getSession();
 		articleMap.put("imageFileName", imageFileName);
 
@@ -227,26 +252,46 @@ public class BoardControllerImpl implements BoardController {
 		return resEnt;
 	}
 
-	// 한개 이미지 업로드하기
-	private String upload(MultipartHttpServletRequest multipartRequest) throws Exception {
-		String imageFileName = null;
+	//한개 이미지 업로드
+	/*
+	private String upload(MultipartHttpServletRequest multipartRequest,boolean check) throws Exception{
+		String imageFileName= null;
 		Iterator<String> fileNames = multipartRequest.getFileNames();
-
-		while (fileNames.hasNext()) {
+		
+		while(fileNames.hasNext()){
 			String fileName = fileNames.next();
 			MultipartFile mFile = multipartRequest.getFile(fileName);
-			imageFileName = mFile.getOriginalFilename();
-			File file = new File(ARTICLE_IMAGE_REPO + "\\" + "temp" + "\\" + fileName);
-			if (mFile.getSize() != 0) { // File Null Check
-				if (!file.exists()) { // 경로상에 파일이 존재하지 않을 경우
-					file.getParentFile().mkdirs(); // 경로에 해당하는 디렉토리들을 생성
-					mFile.transferTo(new File(ARTICLE_IMAGE_REPO + "\\" + "temp" + "\\" + imageFileName)); // 임시로 저장된
-																											// multipartFile을
-																											// 실제 파일로 전송
+			imageFileName=mFile.getOriginalFilename();
+			File file = new File(ARTICLE_IMAGE_REPO +"\\"+"temp"+"\\" + fileName);
+			if(mFile.getSize()!=0){ //File Null Check
+				if(!file.exists()){ //경로상에 파일이 존재하지 않을 경우
+					file.getParentFile().mkdirs();  //경로에 해당하는 디렉토리들을 생성
+					mFile.transferTo(new File(ARTICLE_IMAGE_REPO +"\\"+"temp"+ "\\"+imageFileName)); 
 				}
 			}
-
+			
 		}
 		return imageFileName;
+	}*/
+
+	
+	// 멀티 이미지 업로드하기
+	private List<String> upload(MultipartHttpServletRequest multipartRequest) throws Exception{
+		List<String> fileList= new ArrayList<String>();
+		Iterator<String> fileNames = multipartRequest.getFileNames();
+		while(fileNames.hasNext()){
+			String fileName = fileNames.next();
+			MultipartFile mFile = multipartRequest.getFile(fileName);
+			String originalFileName=mFile.getOriginalFilename();
+			fileList.add(originalFileName);
+			File file = new File(ARTICLE_IMAGE_REPO +"\\"+"temp"+"\\" + fileName);
+			if(mFile.getSize()!=0){ 
+				if(!file.exists()){
+					file.getParentFile().mkdirs();  
+					mFile.transferTo(new File(ARTICLE_IMAGE_REPO +"\\"+"temp"+ "\\"+originalFileName)); 
+				}
+			}
+		}
+		return fileList;
 	}
 }

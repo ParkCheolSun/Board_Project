@@ -7,5 +7,6 @@ PUBLIC "-//mydatis.org//DTD Config 3.0//EN"
 	<typeAliases>
 		<typeAlias type="com.myspring.pro30.member.vo.MemberVO" alias="memberVO" />
 		<typeAlias type="com.myspring.pro30.board.vo.ArticleVO" alias="articleVO" />
+		<typeAlias type="com.myspring.pro30.board.vo.ImageVO" alias="imageVO" />
 	</typeAliases>
 </configuration>

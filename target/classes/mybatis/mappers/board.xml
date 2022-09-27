@@ -15,6 +15,19 @@ PUBLIC "-//mydatis.org//DTD Mapper 3.0//EN"
 		<result property="imageFileName" column="imageFileName" />
 		<result property="id" column="id" />
 	</resultMap>
+	
+	<resultMap id="imgResult" type="imageVO">
+		<result property="imageFileNO" column="imageFileNO" />
+		<result property="articleNO" column="articleNO" />
+		<result property="imageFileName" column="imageFileName" />
+	</resultMap>
+	
+	<select id="selectImageFileList" resultMap="imgResult" parameterType="int">
+		<![CDATA[
+			SELECT * FROM t_imageFile
+			WHERE articleNO = #{articleNO}
+		]]> 
+	</select>
 
 	<select id="selectAllArticleList" parameterType="articleVO" resultMap="articlesResult">
 		<![CDATA[
@@ -29,8 +42,15 @@ PUBLIC "-//mydatis.org//DTD Mapper 3.0//EN"
 	<insert id="insertNewArticle"  parameterType="java.util.Map">
 		<![CDATA[
 			INSERT into t_board(articleNO,  title, content, imageFileName, id)
-			VALUES(#{articleNO},#{title},	#{content}, #{imageFileName},	#{id})
+			VALUES(#{articleNO},#{title},	#{content}, null,	#{id})
 		]]>      
+	</insert>
+	
+	<insert id="insertNewImage" parameterType="java.util.Map">
+		<foreach item="item" collection="list" open="INSERT ALL" separator=" " close="SELECT * FROM DUAL">
+			INTO t_imageFile(imageFileNO, imageFileName, articleNO, regDate)
+			VALUES(#{item.imageFileNO}, #{item.imageFileName}, #{item.articleNO}, sysdate)
+		</foreach>
 	</insert>
 	
 	  <select id="selectNewArticleNO" resultType="int"  >
