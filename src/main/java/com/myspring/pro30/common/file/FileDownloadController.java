@@ -19,11 +19,11 @@ public class FileDownloadController {
 	private static final Logger logger = LoggerFactory.getLogger(FileDownloadController.class);
 	@RequestMapping("/download.do")
 	public void download(@RequestParam("imageFileName") String imageFileName,@RequestParam("articleNO") String articleNO , HttpServletResponse response) throws Exception{
+		if(imageFileName.equals("temp"))
+			return;
 		OutputStream out = response.getOutputStream();
 		String downFile = ARTICLE_IMAGE_REPO + "\\" + articleNO + "\\" + imageFileName;
-		logger.debug("debug : imageFileName" + imageFileName);
 		File file = new File(downFile);
-		
 		response.setHeader("Cache-Control", "no-cache");
 		response.addHeader("Content-disposition", "attachment; fileName=" + imageFileName);
 		FileInputStream in = new FileInputStream(file);
