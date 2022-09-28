@@ -20,7 +20,8 @@ public interface MemberController {
 			HttpServletResponse response) throws Exception;
 
 	public ModelAndView form(@RequestParam(value = "result", required = false) String result,
-			@RequestParam(value = "action", required = false) String action, RedirectAttributes rAttr,
+			@RequestParam(value = "action", required = false) String action,@RequestParam(value= "parentNO", required=false) String parentNO,
+ RedirectAttributes rAttr,
 			HttpServletRequest request, HttpServletResponse response) throws Exception;
 
 	public ModelAndView modMember(@RequestParam("id") String id, HttpServletRequest request,

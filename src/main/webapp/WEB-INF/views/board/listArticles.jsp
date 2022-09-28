@@ -87,10 +87,14 @@ request.setCharacterEncoding("UTF-8");
 					<tr align="center">
 						<td width="5%">${articleNum.count}</td>
 						<td width="10%">${article.id}</td>
-						<td align="left" width="35%"><span
-							style="padding-right: 30px;"></span> <c:choose>
-								<c:when test="${article.level > 1 }">
-									<c:forEach begin="1" end="${article.level }" step="1">
+						<td align="left" width="35%">
+						<span style="padding-right: 30px;"></span> 
+						<script type="text/javascript">
+							console.log(${article.lvl});
+						</script>
+						<c:choose>
+								<c:when test="${article.lvl > 1 }">
+									<c:forEach begin="1" end="${article.lvl }" step="1">
 										<span style="padding-left: 20px;"></span>
 									</c:forEach>
 									<span style="font-size: 12px;">[답변]</span>
@@ -103,8 +107,10 @@ request.setCharacterEncoding("UTF-8");
 										href="${contextPath }/board/viewArticle.do?
 									articleNO=${article.articleNO}">${article.title }</a>
 								</c:otherwise>
-							</c:choose></td>
-						<td width="10%"><fmt:formatDate value="${article.writeDate }" />
+							</c:choose>
+							</td>
+						<td width="10%">
+						<fmt:formatDate value="${article.writeDate }" />
 						</td>
 					</tr>
 				</c:forEach>

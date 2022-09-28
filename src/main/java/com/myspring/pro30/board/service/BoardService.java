@@ -12,4 +12,5 @@ public interface BoardService {
 	public Map listArticles(Map pagingMap) throws Exception;
 	public void modArticle(Map articleMap) throws Exception;
 	public void removeArticle(int articleNO) throws Exception;
+	public int addReply(Map articleMap) throws Exception;
 }

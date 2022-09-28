@@ -46,7 +46,7 @@ public class BoardControllerImpl implements BoardController {
 	@RequestMapping(value = "/board/listArticles.do", method = { RequestMethod.POST, RequestMethod.GET })
 	public ModelAndView listArticles(HttpServletRequest request, HttpServletResponse response) throws Exception {
 		String viewName = (String) request.getAttribute("viewName");
-		List articleList = boardService.listArticles();
+		// List articleList = boardService.listArticles();
 		ModelAndView mav = new ModelAndView(viewName);
 		// mav.addObject("articleList", articleList);
 
@@ -59,6 +59,13 @@ public class BoardControllerImpl implements BoardController {
 		pagingMap.put("section", section);
 		pagingMap.put("pageNum", pageNum);
 		Map articlesMap = boardService.listArticles(pagingMap);
+		{
+			List articleList = (List) articlesMap.get("articlesList");
+			for (int i = 0; i < articleList.size(); i++) {
+				ArticleVO temp = (ArticleVO) articleList.get(i);
+				System.out.println("Controll Level : " + temp.getLvl());
+			}
+		}
 		articlesMap.put("section", section);
 		articlesMap.put("pageNum", pageNum);
 		logger.debug(articlesMap.toString());
@@ -82,20 +89,17 @@ public class BoardControllerImpl implements BoardController {
 			articleMap.put(name, value);
 		}
 
-		//String imageFileName = upload(multipartRequest);
+		// String imageFileName = upload(multipartRequest);
 		List<String> fileList = upload(multipartRequest);
 		List<ImageVO> imageFileList = new ArrayList<ImageVO>();
 		HttpSession session = multipartRequest.getSession();
 		MemberVO memberVO = (MemberVO) session.getAttribute("member");
-		
 		String id = memberVO.getId();
-		articleMap.put("parentNO", 0);
+		String parentNO = (String) session.getAttribute("parentNO");
+		articleMap.put("parentNO", (parentNO == null ? 0 : parentNO));
 		articleMap.put("id", id);
-		//articleMap.put("imageFileName", imageFileName);
-		logger.info(articleMap.toString());
-		
-		if(fileList != null && fileList.size() != 0) {
-			for(String fileName : fileList) {
+		if (fileList != null && fileList.size() != 0) {
+			for (String fileName : fileList) {
 				imageVO = new ImageVO();
 				imageVO.setImageFileName(fileName);
 				imageFileList.add(imageVO);
@@ -110,12 +114,12 @@ public class BoardControllerImpl implements BoardController {
 		try {
 			int articleNO = boardService.addNewArticle(articleMap);
 			if (imageFileList != null && imageFileList.size() != 0) {
-				for(ImageVO  imageVO:imageFileList) {
+				for (ImageVO imageVO : imageFileList) {
 					String imageFileName = imageVO.getImageFileName();
-					File srcFile = new File(ARTICLE_IMAGE_REPO+"\\"+"temp"+"\\"+imageFileName);
-					File destDir = new File(ARTICLE_IMAGE_REPO+"\\"+articleNO);
-					//destDir.mkdirs();
-					FileUtils.moveFileToDirectory(srcFile, destDir,true);
+					File srcFile = new File(ARTICLE_IMAGE_REPO + "\\" + "temp" + "\\" + imageFileName);
+					File destDir = new File(ARTICLE_IMAGE_REPO + "\\" + articleNO);
+					// destDir.mkdirs();
+					FileUtils.moveFileToDirectory(srcFile, destDir, true);
 				}
 
 			}
@@ -126,12 +130,12 @@ public class BoardControllerImpl implements BoardController {
 			message += " </script>";
 			resEnt = new ResponseEntity(message, responseHeaders, HttpStatus.CREATED);
 		} catch (Exception e) {
-			if(imageFileList!=null && imageFileList.size()!=0) {
-				  for(ImageVO  imageVO:imageFileList) {
-				  	String imageFileName = imageVO.getImageFileName();
-					File srcFile = new File(ARTICLE_IMAGE_REPO+"\\"+"temp"+"\\"+imageFileName);
-				 	srcFile.delete();
-				  }
+			if (imageFileList != null && imageFileList.size() != 0) {
+				for (ImageVO imageVO : imageFileList) {
+					String imageFileName = imageVO.getImageFileName();
+					File srcFile = new File(ARTICLE_IMAGE_REPO + "\\" + "temp" + "\\" + imageFileName);
+					srcFile.delete();
+				}
 			}
 
 			message = " <script>";
@@ -144,9 +148,34 @@ public class BoardControllerImpl implements BoardController {
 		return resEnt;
 	}
 
-	@RequestMapping(value = "/board/*Form.do", method = RequestMethod.GET)
-	private ModelAndView form(HttpServletRequest request, HttpServletResponse response) throws Exception {
+	@Override
+	@RequestMapping(value = "/board/replyForm.do", method = RequestMethod.POST)
+	@ResponseBody
+	public ModelAndView replyForm(HttpServletRequest request, HttpServletResponse response) throws Exception {
+		request.setCharacterEncoding("utf-8");
+		HttpSession session = request.getSession();
+		int parentNO = Integer.parseInt(request.getParameter("parentNO"));
+		MemberVO memberVO = (MemberVO) session.getAttribute("member");
+		String name = memberVO.getName();
+		session.setAttribute("parentNO", parentNO);
 		String viewName = (String) request.getAttribute("viewName");
+		ModelAndView mav = new ModelAndView();
+		mav.setViewName(viewName);
+		mav.addObject("parentNO", parentNO);
+		mav.addObject("name", name);
+		return mav;
+	}
+
+	@RequestMapping(value = "/board/*Form.do", method = RequestMethod.GET)
+	private ModelAndView form(@RequestParam(value="parentNO", required=false) String parentNO,
+								HttpServletRequest request, HttpServletResponse response) throws Exception {
+		String viewName = (String) request.getAttribute("viewName");
+		if(viewName.equals("/board/replyForm")) {
+			HttpSession session = request.getSession();
+			if(parentNO != null) {
+				session.setAttribute("parentNO", parentNO);  //미리 로그인 후, 답글 쓰기 클릭 시 부모글번호를 세션에 저장
+			}
+		}
 		ModelAndView mav = new ModelAndView();
 		mav.setViewName(viewName);
 		return mav;
@@ -158,7 +187,7 @@ public class BoardControllerImpl implements BoardController {
 		String viewName = (String) request.getAttribute("viewName");
 		ModelAndView mav = new ModelAndView();
 		try {
-			//articleVO = boardService.viewArticle(articleNO);
+			// articleVO = boardService.viewArticle(articleNO);
 			Map articleMap = boardService.viewArticle(articleNO);
 			mav.setViewName(viewName);
 			mav.addObject("articleMap", articleMap);
@@ -181,7 +210,7 @@ public class BoardControllerImpl implements BoardController {
 			articleMap.put(name, value);
 		}
 
-		String imageFileName = "temp";//upload(multipartRequest, true);
+		String imageFileName = "temp";// upload(multipartRequest, true);
 		HttpSession session = multipartRequest.getSession();
 		articleMap.put("imageFileName", imageFileName);
 
@@ -253,43 +282,38 @@ public class BoardControllerImpl implements BoardController {
 		return resEnt;
 	}
 
-	//한개 이미지 업로드
+	// 한개 이미지 업로드
 	/*
-	private String upload(MultipartHttpServletRequest multipartRequest,boolean check) throws Exception{
-		String imageFileName= null;
-		Iterator<String> fileNames = multipartRequest.getFileNames();
-		
-		while(fileNames.hasNext()){
-			String fileName = fileNames.next();
-			MultipartFile mFile = multipartRequest.getFile(fileName);
-			imageFileName=mFile.getOriginalFilename();
-			File file = new File(ARTICLE_IMAGE_REPO +"\\"+"temp"+"\\" + fileName);
-			if(mFile.getSize()!=0){ //File Null Check
-				if(!file.exists()){ //경로상에 파일이 존재하지 않을 경우
-					file.getParentFile().mkdirs();  //경로에 해당하는 디렉토리들을 생성
-					mFile.transferTo(new File(ARTICLE_IMAGE_REPO +"\\"+"temp"+ "\\"+imageFileName)); 
-				}
-			}
-			
-		}
-		return imageFileName;
-	}*/
+	 * private String upload(MultipartHttpServletRequest multipartRequest,boolean
+	 * check) throws Exception{ String imageFileName= null; Iterator<String>
+	 * fileNames = multipartRequest.getFileNames();
+	 * 
+	 * while(fileNames.hasNext()){ String fileName = fileNames.next(); MultipartFile
+	 * mFile = multipartRequest.getFile(fileName);
+	 * imageFileName=mFile.getOriginalFilename(); File file = new
+	 * File(ARTICLE_IMAGE_REPO +"\\"+"temp"+"\\" + fileName);
+	 * if(mFile.getSize()!=0){ //File Null Check if(!file.exists()){ //경로상에 파일이 존재하지
+	 * 않을 경우 file.getParentFile().mkdirs(); //경로에 해당하는 디렉토리들을 생성
+	 * mFile.transferTo(new File(ARTICLE_IMAGE_REPO
+	 * +"\\"+"temp"+ "\\"+imageFileName)); } }
+	 * 
+	 * } return imageFileName; }
+	 */
 
-	
 	// 멀티 이미지 업로드하기
-	private List<String> upload(MultipartHttpServletRequest multipartRequest) throws Exception{
-		List<String> fileList= new ArrayList<String>();
+	private List<String> upload(MultipartHttpServletRequest multipartRequest) throws Exception {
+		List<String> fileList = new ArrayList<String>();
 		Iterator<String> fileNames = multipartRequest.getFileNames();
-		while(fileNames.hasNext()){
+		while (fileNames.hasNext()) {
 			String fileName = fileNames.next();
 			MultipartFile mFile = multipartRequest.getFile(fileName);
-			String originalFileName=mFile.getOriginalFilename();
+			String originalFileName = mFile.getOriginalFilename();
 			fileList.add(originalFileName);
-			File file = new File(ARTICLE_IMAGE_REPO +"\\"+"temp"+"\\" + fileName);
-			if(mFile.getSize()!=0){ 
-				if(!file.exists()){
-					file.getParentFile().mkdirs();  
-					mFile.transferTo(new File(ARTICLE_IMAGE_REPO +"\\"+"temp"+ "\\"+originalFileName)); 
+			File file = new File(ARTICLE_IMAGE_REPO + "\\" + "temp" + "\\" + fileName);
+			if (mFile.getSize() != 0) {
+				if (!file.exists()) {
+					file.getParentFile().mkdirs();
+					mFile.transferTo(new File(ARTICLE_IMAGE_REPO + "\\" + "temp" + "\\" + originalFileName));
 				}
 			}
 		}

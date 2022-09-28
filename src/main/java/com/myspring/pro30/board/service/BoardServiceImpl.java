@@ -67,6 +67,11 @@ public class BoardServiceImpl implements BoardService{
 	public void removeArticle(int articleNO) throws Exception {
 		boardDAO.deleteArticle(articleNO);
 	}
+	
+	@Override
+	public int addReply(Map articleMap) throws Exception {
+		return boardDAO.addReply(articleMap);
+	}
 
 
 }

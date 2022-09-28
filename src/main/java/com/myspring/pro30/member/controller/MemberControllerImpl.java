@@ -115,11 +115,16 @@ public class MemberControllerImpl extends MultiActionController implements Membe
 	@Override
 	@RequestMapping(value = "/member/*Form.do", method = { RequestMethod.GET, RequestMethod.POST })
 	public ModelAndView form(@RequestParam(value = "result", required = false) String result,
-			@RequestParam(value = "action", required = false) String action, RedirectAttributes rAttr,
+			@RequestParam(value = "action", required = false) String action,
+			@RequestParam(value = "parentNO", required = false) String parentNO, RedirectAttributes rAttr,
 			HttpServletRequest request, HttpServletResponse response) throws Exception {
 		String viewName = (String) request.getAttribute("viewName");
 		HttpSession session = request.getSession();
 		session.setAttribute("action", action);
+		if (parentNO != null) { 
+			session.setAttribute("parentNO", parentNO); 
+		}
+
 		ModelAndView mav = new ModelAndView();
 		mav.addObject("result", result);
 		mav.setViewName(viewName);

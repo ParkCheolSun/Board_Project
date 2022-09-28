@@ -13,14 +13,21 @@
 <title>Insert title here</title>
 <script src="http://code.jquery.com/jquery-latest.min.js"></script>
 <script type="text/javascript">
-	function readURL(input) {
+	function readURL(input, index) {
 		if(input.files && input.files[0]){
 			var reader = new FileReader();
 			reader.onload = function(e) {
-			$('#preview').attr('src',e.target.result);
+			$('#preview'+index).attr('src',e.target.result);
 			}
 		reader.readAsDataURL(input.files[0]);
 		}
+	}
+	var cnt=1;
+	function fn_addFile() {
+		$("#d_file").append('<tr bordercolor="#ff0000" align="center" width=100%  align=center>');
+		$("#d_file").append("<td><input type='file' name='file"+cnt+"' onchange='readURL(this,"+ cnt + ")' /></td>");
+		$("#d_file").append("<td>"+"<img  id='preview" + cnt + "' width=150 height=150/></td></tr>");
+		cnt++;
 	}
 	function backToList(obj) {
 		obj.action = "${contextPath}/board/listArticles.do";
@@ -30,24 +37,29 @@
 </head>
 <body>
 	<h1 style="text-align: center;">답글 쓰기</h1>
-	<form name="frmReply" method="post" action="${contextPath }/board/addReply.do" enctype="multipart/form-data">
-		<table align="center">
+	<form name="frmReply" method="post" action="${contextPath }/board/addNewArticle.do" enctype="multipart/form-data">
+		<table border="1" align="center">
 			<tr>
-				<td align="right">글쓴이 : &nbsp;</td>
+				<td align="center" bgcolor="#ff9933">작성자</td>
+				<td><input type="text" size="67" maxlength="100" name="name" value="${name}" readonly="readonly"/> </td>
+			</tr>
+			<tr>
+				<td align="center" bgcolor="#ff9933">제목</td>
 				<td><input type="text" size="67" maxlength="100" name="title"/> </td>
 			</tr>
 			<tr>
-				<td align="right" valign="top"><br>글내용 : &nbsp; </td>
-				<td><textarea rows="10" cols="65" name="content" maxlength="4000"></textarea></td>
+				<td align="center" valign="middle" bgcolor="#ff9933">글내용</td>
+				<td><textarea rows="10" cols="65" name="content" maxlength="4000" border="0" resize="none"></textarea></td>
 			</tr>
 			<tr>
-				<td align="right">이미지 파일 첨부 : </td>
-				<td><input type="file" name="imageFileName" onchange="readURL(this);"/> </td>
-				<td><img src="#" id="preview" width="200" height="200"/> </td>
+				<td align="center" bgcolor="#ff9933">
+				이미지 파일 첨부<br>
+				<input type="button" value="파일추가" onclick="fn_addFile()"/> 
+				</td>
+				<td><div id="d_file"></div></td>
 			</tr>
 			<tr>
-				<td align="right"></td>
-				<td>
+				<td colspan="2">
 					<input type="submit" value="답글반영하기"/>
 					<input type="button" value="취소" onclick="backToList(this.form)"/>
 				</td>

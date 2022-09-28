@@ -6,7 +6,7 @@ PUBLIC "-//mydatis.org//DTD Mapper 3.0//EN"
 
 <mapper namespace="mapper.board">
 	<resultMap id="articlesResult" type="articleVO">
-		<result property="level" column="level" />
+		<result property="lvl" column="lvl" />
 		<result property="articleNO" column="articleNO" />
 		<result property="parentNO" column="parentNO" />
 		<result property="title" column="title" />
@@ -41,8 +41,15 @@ PUBLIC "-//mydatis.org//DTD Mapper 3.0//EN"
 	
 	<insert id="insertNewArticle"  parameterType="java.util.Map">
 		<![CDATA[
-			INSERT into t_board(articleNO,  title, content, imageFileName, id)
-			VALUES(#{articleNO},#{title},	#{content}, null,	#{id})
+			INSERT into t_board(articleNO, parentNO, title, content, imageFileName, id)
+			VALUES(#{articleNO}, #{parentNO},#{title}, #{content}, null,	#{id})
+		]]>      
+	</insert>
+	
+	<insert id="insertReplyArticle"  parameterType="java.util.Map">
+		<![CDATA[
+			INSERT into t_board(articleNO, parentNO, title, content, imageFileName, id)
+			VALUES(#{articleNO},#{title}, #{parentNO}, #{content}, #{imageFileName}, #{id})
 		]]>      
 	</insert>
 	

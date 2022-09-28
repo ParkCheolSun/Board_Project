@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 
 @Component("articleVO")
 public class ArticleVO {
-	private int level;
+	private int lvl;
 	private int articleNO;
 	private int parentNO;
 	private String title;
@@ -17,11 +17,11 @@ public class ArticleVO {
 	private String imageFileName;
 	private String id;
 	private Date writeDate;
-	public int getLevel() {
-		return level;
+	public int getLvl() {
+		return lvl;
 	}
-	public void setLevel(int level) {
-		this.level = level;
+	public void setLvl(int lvl) {
+		this.lvl = lvl;
 	}
 	public int getArticleNO() {
 		return articleNO;

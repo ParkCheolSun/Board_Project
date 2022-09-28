@@ -18,7 +18,7 @@ public class BoardDAOImpl implements BoardDAO {
 	private SqlSession sqlSession;
 
 	@Override
-	public List selectAllArtclesList() throws Exception {
+	public List selectAllArtclesList() throws DataAccessException {
 		List<ArticleVO> articleList = sqlSession.selectList("mapper.board.selectAllArticleList");
 		return articleList;
 	}
@@ -62,19 +62,34 @@ public class BoardDAOImpl implements BoardDAO {
 	}
 
 	@Override
-	public List selectAllArtcles(Map<String, Integer> pagingMap) throws Exception {
+	public List selectAllArtcles(Map<String, Integer> pagingMap) throws DataAccessException {
 		List<ArticleVO> articleList = sqlSession.selectList("mapper.board.pageNum", pagingMap);
+		{
+			for(int i=0;i<articleList.size();i++) {
+				ArticleVO temp = articleList.get(i);
+				System.out.println("DAO title : " + temp.getTitle());
+				System.out.println("DAO level : " + temp.getLvl());
+			}
+		}
 		return articleList;
 	}
 
 	@Override
-	public int selectTotArticles() throws Exception {
+	public int selectTotArticles() throws DataAccessException {
 		int totpage = sqlSession.selectOne("mapper.board.selectTotArticles");
 		return totpage;
 	}
+	
+	@Override
+	public int addReply(Map articleMap) throws DataAccessException {
+		int articleNO = selectNewArticleNO();
+		articleMap.put("articleNO", articleNO);
+		sqlSession.insert("mapper.board.insertNewArticle", articleMap);
+		return articleNO;
+	}
 
 	@Override
-	public void modArticle(Map articleMap) throws Exception {
+	public void modArticle(Map articleMap) throws DataAccessException {
 		sqlSession.update("mapper.board.updateArticle", articleMap);
 	}
 
