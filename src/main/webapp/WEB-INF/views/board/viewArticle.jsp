@@ -31,7 +31,10 @@ request.setCharacterEncoding("UTF-8");
 	function fn_enable(obj) {
 		document.getElementById("i_title").disabled = false;
 		document.getElementById("i_content").disabled = false;
-		document.getElementById("i_imageFileName").disabled = false;
+		/*  document.getElementById("i_imageFileName").disabled = false; */
+		document.getElementsByName("imageFileName").forEach(e => {
+		      e.disabled = false;
+	    });
 		document.getElementById("tr_btn_modify").style.disabled = "block";
 		document.getElementById("tr_btn").style.disabled = "none";
 	}
@@ -108,12 +111,16 @@ request.setCharacterEncoding("UTF-8");
 							id="preview" /><br></td>
 					</tr>
 					<tr>
-						<td><input type="file" name="imageFileName "
-							id="i_imageFileName" disabled onchange="readURL(this);" /></td>
+						<td>
+						<!-- style="display:none" -->
+						<input type="file" name="imageFileName" 
+							id="i_imageFileName" disabled onchange="readURL(this);" />
+							
+							</td>
 					</tr>
 				</c:forEach>
 			</c:if>
-
+<!--  
 			<c:choose>
 				<c:when
 					test="${not empty article.imageFileName && article.imageFileName!='null' }">
@@ -144,6 +151,7 @@ request.setCharacterEncoding("UTF-8");
 					</tr>
 				</c:otherwise>
 			</c:choose>
+			-->
 			<tr>
 				<td width="20%" align="center" bgcolor="#ff9933">등록일자</td>
 				<td><input type="text"
